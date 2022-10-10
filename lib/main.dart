@@ -1,0 +1,54 @@
+import 'package:flutter/material.dart';
+import 'package:trufi_core/base/blocs/map_configuration/map_configuration_cubit.dart';
+import 'package:trufi_core/base/models/trufi_latlng.dart';
+import 'package:trufi_core/base/utils/certificates_letsencrypt_android.dart';
+import 'package:trufi_core/base/utils/graphql_client/hive_init.dart';
+import 'package:trufi_core/base/widgets/drawer/menu/social_media_item.dart';
+import 'package:trufi_core/default_values.dart';
+import 'package:trufi_core/trufi_core.dart';
+import 'package:trufi_core/trufi_router.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await CertificatedLetsencryptAndroid.workAroundCertificated();
+  await initHiveForFlutter();
+  runApp(
+    TrufiApp(
+      appNameTitle: 'ReciBus',
+      blocProviders: [
+        ...DefaultValues.blocProviders(
+          otpEndpoint: "https://br-recife.api.trufi.app:8300/otp",
+          otpGraphqlEndpoint: "",
+          mapConfiguration: MapConfiguration(
+            center: const TrufiLatLng(-8.0606, -34.8878),
+          ),
+          searchAssetPath: "",
+          photonUrl: "https://br-recife.api.trufi.app:8300/photon",
+        ),
+      ],
+      trufiRouter: TrufiRouter(
+        routerDelegate: DefaultValues.routerDelegate(
+          appName: 'ReciBus',
+          cityName: 'Recife',
+          countryName: 'Brasil',
+          backgroundImageBuilder: (_) {
+            return Image.asset(
+              'assets/images/drawer-bg.jpeg',
+              fit: BoxFit.cover,
+            );
+          },
+          urlFeedback: 'https://example/feedback',
+          emailContact: 'example@example.com',
+          urlShareApp: 'https://example/share',
+          urlSocialMedia: const UrlSocialMedia(
+            urlFacebook: 'https://www.facebook.com/Example',
+          ),
+          shareBaseUri: Uri(
+            scheme: "https",
+            host: "trufi.example",
+          ),
+        ),
+      ),
+    ),
+  );
+}
